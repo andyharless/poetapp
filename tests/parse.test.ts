@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseText } from '../src/parse';
+import { formatText, parseText } from '../src/parse';
 
 describe('parseText', () => {
   it('splits lines and marks stanza breaks', () => {
@@ -21,5 +21,13 @@ describe('parseText', () => {
 
   it('returns nothing for empty input', () => {
     expect(parseText('  \n\n').lines).toEqual([]);
+  });
+});
+
+describe('formatText', () => {
+  it('round-trips through parseText', () => {
+    const r = parseText('a\nb\n\nc\n\n\nd');
+    expect(formatText(r)).toBe('a\nb\n\nc\n\nd');
+    expect(parseText(formatText(r))).toEqual(r);
   });
 });

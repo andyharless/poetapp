@@ -72,8 +72,11 @@ label { display: block; margin: 12px 0 4px; font-weight: 600; }
 .poem-line { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; }
 .poem-line .count { color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
 .poem-line .count.hot { color: var(--bad); font-weight: 600; }
+.poem-line.recent { box-shadow: inset 3px 0 var(--bad); padding-left: 8px; }
+.legend { margin-bottom: 8px; }
 
 .cue { color: var(--muted); font-size: 1.15rem; margin: 6px 0; }
+.cue-gap { height: 10px; }
 .target {
   border: 2px dashed var(--line); border-radius: 12px; padding: 18px 14px;
   margin: 16px 0; font-size: 1.3rem; min-height: 4.5rem; text-align: center;

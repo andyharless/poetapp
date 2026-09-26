@@ -1,16 +1,31 @@
 import { getLineStats, getPoem, saveResult } from '../db';
 import { h, mount } from '../dom';
 import { today } from '../model';
-import { answer, applyResult, createSession, cueLines, currentLine, type Session } from '../session';
+import {
+  allLines,
+  answer,
+  applyResult,
+  createSession,
+  cueLines,
+  currentLine,
+  recentlyMissed,
+  type Session,
+} from '../session';
 
-export async function practiceScreen(root: HTMLElement, id: string) {
+// Practices the whole poem, or with `missedOnly` just the lines missed on their last try.
+export async function practiceScreen(root: HTMLElement, id: string, missedOnly = false) {
   const poem = await getPoem(id);
   if (!poem) {
     location.hash = '#/';
     return;
   }
 
-  let session: Session = createSession(poem.lines.length);
+  const lines = missedOnly ? recentlyMissed(poem, await getLineStats(id)) : allLines(poem.lines.length);
+  if (lines.length === 0) {
+    location.hash = `#/poem/${id}`;
+    return;
+  }
+  let session: Session = createSession(lines);
   let revealed = false;
   let saved = false;
 
@@ -32,6 +47,8 @@ export async function practiceScreen(root: HTMLElement, id: string) {
 
   const render = () => {
     const back = h('a', { class: 'btn', href: `#/poem/${id}` }, session.phase === 'done' ? 'Done' : 'Quit');
+    const asked = session.lines.length;
+    const what = missedOnly ? `previously missed line${asked === 1 ? '' : 's'}` : 'lines';
 
     if (session.phase === 'done') {
       const missed = session.firstPassMisses;
@@ -43,8 +60,8 @@ export async function practiceScreen(root: HTMLElement, id: string) {
           'p',
           {},
           missed.length === 0
-            ? `Perfect: all ${poem.lines.length} lines remembered on the first run-through.`
-            : `${missed.length} of ${poem.lines.length} lines missed on the first run-through:`,
+            ? `Perfect: all ${asked} ${what} remembered on the first try.`
+            : `${missed.length} of ${asked} ${what} missed on the first try:`,
         ),
         ...missed.map((i) => h('div', { class: 'poem-line', dir: 'auto' }, `${i + 1}. ${poem.lines[i]}`)),
       );
@@ -55,8 +72,8 @@ export async function practiceScreen(root: HTMLElement, id: string) {
     const reviewing = session.phase === 'review';
     const pct = reviewing
       ? 100 * (1 - session.queue.length / session.firstPassMisses.length)
-      : (100 * line) / poem.lines.length;
-    const cues = cueLines(poem, line);
+      : (100 * session.pos) / asked;
+    const cues = cueLines(line);
 
     mount(
       root,
@@ -67,12 +84,19 @@ export async function practiceScreen(root: HTMLElement, id: string) {
         { class: 'banner' },
         reviewing
           ? `Review: ${session.queue.length} line${session.queue.length === 1 ? '' : 's'} to go`
-          : `Line ${line + 1} of ${poem.lines.length}`,
+          : missedOnly
+            ? `Missed line ${session.pos + 1} of ${asked} (line ${line + 1})`
+            : `Line ${line + 1} of ${poem.lines.length}`,
       ),
-      cues.length === 0
+      // the title cues the start of the poem
+      cues.length === line
         ? h('div', { class: 'cue' }, `${poem.title}${poem.author ? ` — ${poem.author}` : ''}`)
         : null,
-      ...cues.map((c) => h('div', { class: 'cue', dir: 'auto' }, c)),
+      ...cues.flatMap((c, k) => [
+        k > 0 && poem.breakBefore[c] && h('div', { class: 'cue-gap' }),
+        h('div', { class: 'cue', dir: 'auto' }, poem.lines[c]),
+      ]),
+      cues.length > 0 && poem.breakBefore[line] ? h('div', { class: 'cue-gap' }) : null,
       h('div', { class: revealed ? 'target revealed' : 'target', dir: 'auto' }, revealed ? poem.lines[line] : '?'),
       revealed
         ? h(

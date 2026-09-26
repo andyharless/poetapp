@@ -8,12 +8,13 @@ import { practiceScreen } from './screens/practice';
 const root = document.getElementById('app')!;
 
 async function route() {
-  const [, page, id] = location.hash.split('/');
+  const [, page, id, mode] = location.hash.split('/');
   window.scrollTo(0, 0);
   try {
-    if (page === 'add') addScreen(root);
+    if (page === 'add') await addScreen(root);
+    else if (page === 'edit' && id) await addScreen(root, id);
     else if (page === 'poem' && id) await detailScreen(root, id);
-    else if (page === 'practice' && id) await practiceScreen(root, id);
+    else if (page === 'practice' && id) await practiceScreen(root, id, mode === 'missed');
     else await listScreen(root);
   } catch (e) {
     root.textContent = `Something went wrong: ${(e as Error).message}`;

@@ -2,13 +2,16 @@ import { exportAll, importAll, listPoems } from '../db';
 import { h, mount } from '../dom';
 import type { Backup, Poem } from '../model';
 
-type Sort = 'title' | 'stale';
+type Sort = 'title' | 'stale' | 'passed';
 
 function sortPoems(poems: Poem[], by: Sort): Poem[] {
   const copy = [...poems];
   if (by === 'stale') {
     // never tested first, then oldest test date first
     copy.sort((a, b) => (a.lastTested ?? '').localeCompare(b.lastTested ?? '') || a.title.localeCompare(b.title));
+  } else if (by === 'passed') {
+    // never passed first, then oldest pass date first
+    copy.sort((a, b) => (a.lastPassed ?? '').localeCompare(b.lastPassed ?? '') || a.title.localeCompare(b.title));
   } else {
     copy.sort((a, b) => a.title.localeCompare(b.title));
   }
@@ -17,7 +20,7 @@ function sortPoems(poems: Poem[], by: Sort): Poem[] {
 
 async function downloadBackup() {
   const json = JSON.stringify(await exportAll(), null, 2);
-  const name = `poetapp-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  const name = `rhapsode-backup-${new Date().toISOString().slice(0, 10)}.json`;
   const file = new File([json], name, { type: 'application/json' });
   if (navigator.canShare?.({ files: [file] })) {
     try {
@@ -61,6 +64,8 @@ export async function listScreen(root: HTMLElement) {
               ? `Last tested ${p.lastTested} · ${p.lastFirstPassMisses} of ${p.lines.length} lines missed`
               : `Never tested · ${p.lines.length} lines`,
           ),
+          sort === 'passed' &&
+            h('div', { class: 'muted' }, p.lastPassed ? `Last passed ${p.lastPassed}` : 'Never passed'),
         ),
       ),
     );
@@ -78,6 +83,7 @@ export async function listScreen(root: HTMLElement) {
     },
     h('option', { value: 'title', selected: sort === 'title' }, 'Sort: title'),
     h('option', { value: 'stale', selected: sort === 'stale' }, 'Sort: least recently tested'),
+    h('option', { value: 'passed', selected: sort === 'passed' }, 'Sort: least recently passed'),
   );
 
   const fileInput = h('input', {

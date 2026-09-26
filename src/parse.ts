@@ -21,3 +21,8 @@ export function parseText(text: string): ParsedText {
   }
   return { lines, breakBefore };
 }
+
+// Inverse of parseText, for editing: one line per line, a blank line before each stanza.
+export function formatText({ lines, breakBefore }: ParsedText): string {
+  return lines.map((line, i) => (breakBefore[i] ? `\n${line}` : line)).join('\n');
+}

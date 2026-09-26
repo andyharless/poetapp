@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/apple-touch-icon.png'],
       manifest: {
-        name: 'Poet',
-        short_name: 'Poet',
+        name: 'Rhapsode',
+        short_name: 'Rhapsode',
         description: 'Memorize poetry line by line',
         display: 'standalone',
         start_url: './',

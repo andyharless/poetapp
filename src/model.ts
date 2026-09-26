@@ -7,6 +7,7 @@ export interface Poem {
   createdAt: string; // yyyy-mm-dd
   lastTested?: string; // yyyy-mm-dd
   lastFirstPassMisses?: number;
+  lastPassed?: string; // yyyy-mm-dd: last whole-poem run-through with zero first-pass misses
 }
 
 export interface LineStats {
@@ -15,6 +16,7 @@ export interface LineStats {
   missCount: number;
   testCount: number;
   lastMissed?: string;
+  lastOutcome?: 'hit' | 'miss'; // result of the line's most recent first try
 }
 
 export interface Attempt {
@@ -22,6 +24,7 @@ export interface Attempt {
   date: string;
   firstPassMisses: number[];
   totalLines: number;
+  lines?: number[]; // only for partial sessions (missed lines only): the lines asked
 }
 
 export interface Backup {
