@@ -8,6 +8,7 @@ import {
   cueLines,
   currentLine,
   lastPassDate,
+  lastRunMisses,
   recentlyMissed,
 } from '../src/session';
 
@@ -158,5 +159,23 @@ describe('lastPassDate', () => {
     expect(lastPassDate([])).toBeUndefined();
     expect(lastPassDate([a('2026-01-01', []), a('2026-01-05', [2]), a('2026-01-09', [], [2])])).toBe('2026-01-01');
     expect(lastPassDate([a('2026-01-07', []), a('2026-01-03', [])])).toBe('2026-01-07');
+  });
+});
+
+describe('lastRunMisses', () => {
+  it('uses the latest whole-poem attempt and ignores drills', () => {
+    const a = (date: string, misses: number[], lines?: number[]) => ({
+      poemId: 'p1',
+      date,
+      firstPassMisses: misses,
+      totalLines: 6,
+      lines,
+    });
+    expect(lastRunMisses(poem, [])).toEqual([]);
+    expect(
+      lastRunMisses(poem, [a('2026-01-01', [0]), a('2026-01-05', [4, 2, 9]), a('2026-01-06', [4], [2, 4])]),
+    ).toEqual([2, 4]);
+    // same day: the later attempt wins
+    expect(lastRunMisses(poem, [a('2026-01-05', [1]), a('2026-01-05', [3])])).toEqual([3]);
   });
 });

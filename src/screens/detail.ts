@@ -1,6 +1,6 @@
-import { deletePoem, getLineStats, getPoem } from '../db';
+import { deletePoem, getAttempts, getLineStats, getPoem } from '../db';
 import { h, mount } from '../dom';
-import { recentlyMissed } from '../session';
+import { lastRunMisses, recentlyMissed } from '../session';
 
 export async function detailScreen(root: HTMLElement, id: string) {
   const poem = await getPoem(id);
@@ -11,6 +11,12 @@ export async function detailScreen(root: HTMLElement, id: string) {
   const allStats = await getLineStats(id);
   const stats = new Map(allStats.map((s) => [s.lineIndex, s]));
   const recent = new Set(recentlyMissed(poem, allStats));
+  const runMisses = lastRunMisses(poem, await getAttempts(id));
+  // The last-try set differs from the run-through set once missed-line drills have been done.
+  const showRecent = recent.size > 0 && (recent.size !== runMisses.length || runMisses.some((i) => !recent.has(i)));
+  const plural = (n: number) => `${n} line${n === 1 ? '' : 's'}`;
+  const practiceButton = (mode: string, label: string) =>
+    h('div', { class: 'row', style: 'margin-bottom:8px' }, h('a', { class: 'btn big', href: `#/practice/${id}/${mode}` }, label));
 
   const lines = poem.lines.flatMap((line, i) => {
     const st = stats.get(i);
@@ -51,18 +57,11 @@ export async function detailScreen(root: HTMLElement, id: string) {
       { class: 'row', style: 'margin:16px 0 8px' },
       h('a', { class: 'btn primary big', href: `#/practice/${id}` }, 'Practice whole poem'),
     ),
-    recent.size > 0
-      ? h(
-          'div',
-          { class: 'row', style: 'margin-bottom:16px' },
-          h(
-            'a',
-            { class: 'btn big', href: `#/practice/${id}/missed` },
-            `Practice ${recent.size} missed line${recent.size === 1 ? '' : 's'}`,
-          ),
-        )
+    runMisses.length > 0
+      ? practiceButton('run', `Practice ${plural(runMisses.length)} missed on last run-through`)
       : null,
-    h('h2', {}, 'Lines (misses / tests)'),
+    showRecent ? practiceButton('missed', `Practice ${plural(recent.size)} missed on their last try`) : null,
+    h('h2', { style: 'margin-top:24px' }, 'Lines (misses / tests)'),
     recent.size > 0 ? h('div', { class: 'muted legend' }, 'Marked lines were missed on their last try.') : null,
     ...lines,
     h(

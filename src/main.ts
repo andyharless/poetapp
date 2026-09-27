@@ -14,7 +14,7 @@ async function route() {
     if (page === 'add') await addScreen(root);
     else if (page === 'edit' && id) await addScreen(root, id);
     else if (page === 'poem' && id) await detailScreen(root, id);
-    else if (page === 'practice' && id) await practiceScreen(root, id, mode === 'missed');
+    else if (page === 'practice' && id) await practiceScreen(root, id, mode === 'run' || mode === 'missed' ? mode : 'whole');
     else await listScreen(root);
   } catch (e) {
     root.textContent = `Something went wrong: ${(e as Error).message}`;

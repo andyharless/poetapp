@@ -70,6 +70,13 @@ export function recentlyMissed(poem: Poem, stats: LineStats[]): number[] {
     .sort((a, b) => a - b);
 }
 
+// Lines missed on the first pass of the most recent whole-poem run-through.
+export function lastRunMisses(poem: Poem, attempts: Attempt[]): number[] {
+  let last: Attempt | undefined;
+  for (const a of attempts) if (!a.lines && (!last || a.date >= last.date)) last = a;
+  return (last?.firstPassMisses ?? []).filter((i) => i < poem.lines.length).sort((a, b) => a - b);
+}
+
 // Date of the last whole-poem attempt with no first-pass misses.
 export function lastPassDate(attempts: Attempt[]): string | undefined {
   let best: string | undefined;

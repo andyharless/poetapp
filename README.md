@@ -18,9 +18,10 @@ and there is no account or server: your poems and practice history are stored on
   as a cue. You recall the next line, tap **Reveal**, and mark it **Got it** or **Missed**.
 - **Review what you missed.** After the run-through, the lines you missed are asked again, repeating until
   you have got each one right.
-- **Drill just the weak spots.** **Practice missed lines** asks only the lines you missed on their most recent
-  try, each with its usual cue. These drills update the lines' history but don't count as a run-through of
-  the whole poem.
+- **Drill just the weak spots.** Besides the whole poem, you can practice only the lines missed on the last
+  whole-poem run-through, or only the lines missed on their most recent try (which differs once you have
+  drilled some of them). Each line keeps its usual cue. Drills update the lines' history but don't count as a
+  run-through of the whole poem.
 - **Keep records.** For each poem the app records the last date it was tested, how many lines you missed on the
   first run-through, and the last date you *passed* it (a whole run-through with no misses). For each line
   it counts misses against tests, and it marks the lines you missed on their last try.

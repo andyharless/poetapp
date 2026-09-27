@@ -1,4 +1,4 @@
-import { getLineStats, getPoem, saveResult } from '../db';
+import { getAttempts, getLineStats, getPoem, saveResult } from '../db';
 import { h, mount } from '../dom';
 import { today } from '../model';
 import {
@@ -8,19 +8,29 @@ import {
   createSession,
   cueLines,
   currentLine,
+  lastRunMisses,
   recentlyMissed,
   type Session,
 } from '../session';
 
-// Practices the whole poem, or with `missedOnly` just the lines missed on their last try.
-export async function practiceScreen(root: HTMLElement, id: string, missedOnly = false) {
+// Which lines to practice: the whole poem, the lines missed on the last whole-poem
+// run-through, or the lines missed on their own last try (which drills also update).
+export type PracticeMode = 'whole' | 'run' | 'missed';
+
+export async function practiceScreen(root: HTMLElement, id: string, mode: PracticeMode = 'whole') {
   const poem = await getPoem(id);
   if (!poem) {
     location.hash = '#/';
     return;
   }
 
-  const lines = missedOnly ? recentlyMissed(poem, await getLineStats(id)) : allLines(poem.lines.length);
+  const lines =
+    mode === 'run'
+      ? lastRunMisses(poem, await getAttempts(id))
+      : mode === 'missed'
+        ? recentlyMissed(poem, await getLineStats(id))
+        : allLines(poem.lines.length);
+  const missedOnly = mode !== 'whole';
   if (lines.length === 0) {
     location.hash = `#/poem/${id}`;
     return;
