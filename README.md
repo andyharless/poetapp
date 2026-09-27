@@ -67,4 +67,4 @@ Built with Vite, TypeScript (no framework), IndexedDB via `idb`, and `vite-plugi
   Capacitor, build the signed `.ipa` on a cloud Mac (Expo EAS, Codemagic or GitHub Actions macOS runners), and
   upload it to App Store Connect. TestFlight builds expire after 90 days.
 
-The steps used to set up this repo and GitHub Pages the first time are in [docs/setup-notes.md](docs/setup-notes.md).
+What changed and when is in [CHANGELOG.md](CHANGELOG.md). The steps used to set up this repo and GitHub Pages the first time are in [docs/setup-notes.md](docs/setup-notes.md).
