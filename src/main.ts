@@ -4,6 +4,7 @@ import { addScreen } from './screens/add';
 import { detailScreen } from './screens/detail';
 import { listScreen } from './screens/list';
 import { practiceScreen } from './screens/practice';
+import { setUpUpdates } from './update';
 
 const root = document.getElementById('app')!;
 
@@ -23,4 +24,5 @@ async function route() {
 
 window.addEventListener('hashchange', () => void route());
 void requestPersistence();
+setUpUpdates();
 void route();

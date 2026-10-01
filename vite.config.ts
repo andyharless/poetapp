@@ -19,7 +19,8 @@ export default defineConfig({
   define: { __APP_VERSION__: JSON.stringify(appVersion()) },
   plugins: [
     VitePWA({
-      registerType: 'autoUpdate',
+      // 'prompt': a new version waits until the user taps Reload in the update banner (src/update.ts).
+      registerType: 'prompt',
       includeAssets: ['icons/apple-touch-icon.png'],
       manifest: {
         name: 'Rhapsode',

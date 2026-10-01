@@ -4,6 +4,9 @@ Changes to Rhapsode that users can see, newest first. The git history has the de
 
 ## 2026-10-01
 
+- When a new version has downloaded, a banner says **A new version of Rhapsode is ready** with a **Reload**
+  button, instead of the update appearing only on a later launch. The app also checks for updates each time
+  you return to it.
 - Fixed **Export backup** on Android, which still saved a `.json` file to Downloads. It now shares the `.txt`
   version first there, and tries the other kind if one is refused. If sharing fails entirely, it says why
   below the buttons.
