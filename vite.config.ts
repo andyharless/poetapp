@@ -1,22 +1,15 @@
 /// <reference types="node" />
 import { defineConfig } from 'vitest/config';
 import { VitePWA } from 'vite-plugin-pwa';
-import { execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 
-// Shown at the bottom of the poem list, to tell which deploy a phone is running.
-function appVersion(): string {
-  const date = new Date().toISOString().slice(0, 10);
-  try {
-    return `${date} (${execSync('git rev-parse --short HEAD').toString().trim()})`;
-  } catch {
-    return date;
-  }
-}
+// The version in package.json, shown at the bottom of the poem list (see CHANGELOG.md).
+const appVersion: string = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version;
 
 // base './' lets the built site work from any path (e.g. GitHub Pages /repo-name/).
 export default defineConfig({
   base: './',
-  define: { __APP_VERSION__: JSON.stringify(appVersion()) },
+  define: { __APP_VERSION__: JSON.stringify(appVersion) },
   plugins: [
     VitePWA({
       // 'prompt': a new version waits until the user taps Reload in the update banner (src/update.ts).
