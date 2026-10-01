@@ -1,5 +1,5 @@
 import { getAttempts, getLineStats, getPoem, saveResult } from '../db';
-import { h, mount } from '../dom';
+import { h, isTouchDevice, mount } from '../dom';
 import { today } from '../model';
 import {
   allLines,
@@ -54,6 +54,32 @@ export async function practiceScreen(root: HTMLElement, id: string, mode: Practi
     if (session.phase === 'done') void finish();
     render();
   };
+
+  const reveal = () => {
+    revealed = true;
+    render();
+  };
+
+  // Keyboard shortcuts for computers: Space or Enter reveals, → or G is Got it,
+  // ← or M is Missed, Esc leaves.
+  const onKey = (e: KeyboardEvent) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+    // let a focused button or link handle its own keys
+    if ((e.target as Element | null)?.closest?.('button, a, input, textarea, select')) return;
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (key === 'Escape') location.hash = `#/poem/${id}`;
+    else if (session.phase === 'done') return;
+    else if (!revealed && (key === ' ' || key === 'Enter')) reveal();
+    else if (revealed && (key === 'ArrowRight' || key === 'g')) mark(true);
+    else if (revealed && (key === 'ArrowLeft' || key === 'm')) mark(false);
+    else return;
+    e.preventDefault();
+  };
+  document.addEventListener('keydown', onKey);
+  window.addEventListener('hashchange', () => document.removeEventListener('keydown', onKey), { once: true });
+  const keyHint = isTouchDevice()
+    ? null
+    : h('div', { class: 'muted key-hint' }, 'Keys: Space reveal · ← Missed · → Got it · Esc quit');
 
   const render = () => {
     const back = h('a', { class: 'btn', href: `#/poem/${id}` }, session.phase === 'done' ? 'Done' : 'Quit');
@@ -120,16 +146,11 @@ export async function practiceScreen(root: HTMLElement, id: string, mode: Practi
             { class: 'row' },
             h(
               'button',
-              {
-                class: 'primary big',
-                onclick: () => {
-                  revealed = true;
-                  render();
-                },
-              },
+              { class: 'primary big', onclick: reveal },
               'Reveal',
             ),
           ),
+      keyHint,
     );
   };
 

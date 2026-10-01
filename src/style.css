@@ -92,5 +92,6 @@ label { display: block; margin: 12px 0 4px; font-weight: 600; }
   padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
   background: var(--card); border-top: 1px solid var(--line); box-shadow: 0 -2px 8px rgb(0 0 0 / 0.12);
 }
+.key-hint { text-align: center; margin-top: 12px; }
 .version { margin-top: 32px; text-align: center; font-size: 0.8rem; }
 .empty { text-align: center; color: var(--muted); padding: 40px 0; }

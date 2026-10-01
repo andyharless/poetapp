@@ -4,6 +4,10 @@ Changes to Rhapsode that users can see, newest first. The git history has the de
 
 ## 2026-10-01
 
+- On a computer, **Export backup** saves a file to Downloads instead of opening the system share window.
+- Keyboard shortcuts for practice on a computer: **Space** or **Enter** to reveal, **→** or **G** for Got
+  it, **←** or **M** for Missed, **Esc** to quit. A hint below the buttons lists them.
+- The README explains using the app in a desktop browser.
 - When a new version has downloaded, a banner says **A new version of Rhapsode is ready** with a **Reload**
   button, instead of the update appearing only on a later launch. The app also checks for updates each time
   you return to it.

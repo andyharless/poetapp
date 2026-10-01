@@ -28,3 +28,8 @@ export function h<K extends keyof HTMLElementTagNameMap>(
 export function mount(root: HTMLElement, ...children: Child[]) {
   root.replaceChildren(...children.filter((c): c is Node | string => !!c));
 }
+
+// Phones and tablets: the main pointer is a finger. Used to tell them from computers.
+export function isTouchDevice(): boolean {
+  return matchMedia('(pointer: coarse)').matches;
+}

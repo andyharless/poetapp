@@ -28,7 +28,7 @@ and there is no account or server: your poems and practice history are stored on
 - **Choose what to practice.** Sort the list by title, least recently tested, or least recently passed.
 - **Back up.** **Export backup** saves everything to a JSON file, and **Import backup** merges one back in.
 
-## Install on a phone
+## Install
 
 - **iPhone:** open the link above in **Safari**, then choose Share > **Add to Home Screen**.
 - **Android:** open the link in **Chrome**, then tap **Install** when offered, or use the ⋮ menu >
@@ -37,14 +37,26 @@ and there is no account or server: your poems and practice history are stored on
 Either way it launches full-screen and works offline. Use **Export backup** now and then: the data lives only
 on the phone, and the phone can clear web-app storage, for example if you delete the Home Screen icon.
 
-### Moving data between phones
+### Using it on a computer
 
-Poems aren't synced between devices. To copy them, **Export backup** on one phone and **Import backup** on
+Open the link in a desktop browser such as Chrome; your data is kept between visits. To give it its own
+window and launcher entry, click the install icon at the right of Chrome's address bar, or use ⋮ > **Cast,
+save and share** > **Install page as app**. The installed app and the browser tab share the same data.
+
+- Data is kept per browser and per browser profile, so Chrome and Firefox on the same computer each have
+  their own. Clearing the browser's site data deletes it, and an Incognito window forgets it when closed.
+- **Export backup** saves a file to your Downloads folder (on phones and tablets it opens the share sheet).
+- In practice, keyboard shortcuts work: **Space** or **Enter** reveals the line, **→** or **G** is Got it,
+  **←** or **M** is Missed, and **Esc** quits.
+
+### Moving data between devices
+
+Poems aren't synced between devices. To copy them, **Export backup** on one device and **Import backup** on
 the other; importing merges into what is already there.
 
-- **Export** opens the share sheet, so you can send the backup straight to a cloud storage app. On Android
-  the file is named `.txt` instead of `.json`, because Chrome on Android won't share `.json` files. The
-  contents are the same, and either kind can be imported.
+- **Export** on a phone opens the share sheet, so you can send the backup straight to a cloud storage app.
+  On Android the file is named `.txt` instead of `.json`, because Chrome on Android won't share `.json`
+  files. The contents are the same, and either kind can be imported.
 - **Import on an iPhone:** the file picker opens at iCloud Drive. To use another storage app, tap **Browse**,
   then pick it under **Locations**. If it isn't listed, tap ⋯ > **Edit** there and turn it on. The app must
   support the Files app for this to work.

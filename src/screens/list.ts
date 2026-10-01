@@ -1,5 +1,5 @@
 import { exportAll, importAll, listPoems } from '../db';
-import { h, mount } from '../dom';
+import { h, isTouchDevice, mount } from '../dom';
 import type { Backup, Poem } from '../model';
 
 type Sort = 'title' | 'stale' | 'passed';
@@ -18,8 +18,8 @@ function sortPoems(poems: Poem[], by: Sort): Poem[] {
   return copy;
 }
 
-// Shares the backup (so it can go to a cloud storage app), or saves it as a download
-// if sharing isn't possible. Returns a note for the user when it had to download.
+// On a phone or tablet, shares the backup (so it can go to a cloud storage app). On a
+// computer, or if sharing isn't possible, saves it as a download. Returns a note for the user.
 async function exportBackup(): Promise<string | undefined> {
   const json = JSON.stringify(await exportAll(), null, 2);
   const base = `rhapsode-backup-${new Date().toISOString().slice(0, 10)}`;
@@ -29,7 +29,7 @@ async function exportBackup(): Promise<string | undefined> {
   // shares plain text, so try .txt first there. Both import the same way.
   const candidates = /Android/i.test(navigator.userAgent) ? [asText, asJson] : [asJson, asText];
   let problem = 'share' in navigator ? 'this browser can’t share files' : 'this browser can’t share';
-  for (const f of candidates) {
+  for (const f of isTouchDevice() ? candidates : []) {
     if (!navigator.canShare?.({ files: [f] })) continue;
     try {
       await navigator.share({ files: [f], title: f.name });
@@ -45,7 +45,9 @@ async function exportBackup(): Promise<string | undefined> {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
-  return `Saved ${asJson.name} to Downloads, because ${problem}.`;
+  return isTouchDevice()
+    ? `Saved ${asJson.name} to Downloads, because ${problem}.`
+    : `Downloaded ${asJson.name}.`;
 }
 
 export async function listScreen(root: HTMLElement) {
