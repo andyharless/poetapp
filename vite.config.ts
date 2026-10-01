@@ -1,9 +1,22 @@
+/// <reference types="node" />
 import { defineConfig } from 'vitest/config';
 import { VitePWA } from 'vite-plugin-pwa';
+import { execSync } from 'node:child_process';
+
+// Shown at the bottom of the poem list, to tell which deploy a phone is running.
+function appVersion(): string {
+  const date = new Date().toISOString().slice(0, 10);
+  try {
+    return `${date} (${execSync('git rev-parse --short HEAD').toString().trim()})`;
+  } catch {
+    return date;
+  }
+}
 
 // base './' lets the built site work from any path (e.g. GitHub Pages /repo-name/).
 export default defineConfig({
   base: './',
+  define: { __APP_VERSION__: JSON.stringify(appVersion()) },
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',

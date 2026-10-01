@@ -4,6 +4,11 @@ Changes to Rhapsode that users can see, newest first. The git history has the de
 
 ## 2026-10-01
 
+- Fixed **Export backup** on Android, which still saved a `.json` file to Downloads. It now shares the `.txt`
+  version first there, and tries the other kind if one is refused. If sharing fails entirely, it says why
+  below the buttons.
+- The bottom of the poem list shows the version (deploy date and commit), so you can tell whether a phone
+  has picked up the latest update.
 - On Android, **Export backup** now opens the share sheet (so it can go straight to a cloud storage app)
   instead of only saving to Downloads. The backup is shared as a `.txt` file there, because Chrome on Android
   won't share `.json` files. **Import backup** accepts both `.json` and `.txt` backups.

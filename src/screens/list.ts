@@ -18,29 +18,34 @@ function sortPoems(poems: Poem[], by: Sort): Poem[] {
   return copy;
 }
 
-async function downloadBackup() {
+// Shares the backup (so it can go to a cloud storage app), or saves it as a download
+// if sharing isn't possible. Returns a note for the user when it had to download.
+async function exportBackup(): Promise<string | undefined> {
   const json = JSON.stringify(await exportAll(), null, 2);
   const base = `rhapsode-backup-${new Date().toISOString().slice(0, 10)}`;
-  const file = new File([json], `${base}.json`, { type: 'application/json' });
-  // Chrome on Android won't share .json files but will share plain text, so offer the
-  // same content as .txt there; otherwise it falls back to a local download.
-  const shareable = [file, new File([json], `${base}.txt`, { type: 'text/plain' })].find((f) =>
-    navigator.canShare?.({ files: [f] }),
-  );
-  if (shareable) {
+  const asJson = new File([json], `${base}.json`, { type: 'application/json' });
+  const asText = new File([json], `${base}.txt`, { type: 'text/plain' });
+  // Chrome on Android refuses to share .json files (while canShare still says yes) but
+  // shares plain text, so try .txt first there. Both import the same way.
+  const candidates = /Android/i.test(navigator.userAgent) ? [asText, asJson] : [asJson, asText];
+  let problem = 'share' in navigator ? 'this browser can’t share files' : 'this browser can’t share';
+  for (const f of candidates) {
+    if (!navigator.canShare?.({ files: [f] })) continue;
     try {
-      await navigator.share({ files: [shareable], title: shareable.name });
+      await navigator.share({ files: [f], title: f.name });
       return;
     } catch (e) {
       if ((e as Error).name === 'AbortError') return;
+      problem = `sharing failed (${(e as Error).name}: ${(e as Error).message})`;
     }
   }
-  const url = URL.createObjectURL(file);
-  const a = h('a', { href: url, download: file.name });
+  const url = URL.createObjectURL(asJson);
+  const a = h('a', { href: url, download: asJson.name });
   document.body.append(a);
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
+  return `Saved ${asJson.name} to Downloads, because ${problem}.`;
 }
 
 export async function listScreen(root: HTMLElement) {
@@ -117,10 +122,20 @@ export async function listScreen(root: HTMLElement) {
     h(
       'div',
       { class: 'row', style: 'margin-top:24px' },
-      h('button', { onclick: () => void downloadBackup() }, 'Export backup'),
+      h(
+        'button',
+        {
+          onclick: async () => {
+            status.className = 'muted';
+            status.textContent = (await exportBackup()) ?? '';
+          },
+        },
+        'Export backup',
+      ),
       h('button', { onclick: () => fileInput.click() }, 'Import backup'),
       fileInput,
     ),
     status,
+    h('div', { class: 'muted version' }, `Rhapsode version ${__APP_VERSION__}`),
   );
 }
