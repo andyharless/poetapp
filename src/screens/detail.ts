@@ -60,9 +60,9 @@ export async function detailScreen(root: HTMLElement, id: string) {
     runMisses.length > 0
       ? practiceButton('run', `Practice ${plural(runMisses.length)} missed on last run-through`)
       : null,
-    showRecent ? practiceButton('missed', `Practice ${plural(recent.size)} missed on their last try`) : null,
+    showRecent ? practiceButton('missed', `Practice ${plural(recent.size)} missed when last tried`) : null,
     h('h2', { style: 'margin-top:24px' }, 'Lines (misses / tests)'),
-    recent.size > 0 ? h('div', { class: 'muted legend' }, 'Marked lines were missed on their last try.') : null,
+    recent.size > 0 ? h('div', { class: 'muted legend' }, 'Marked lines were missed when last tried.') : null,
     ...lines,
     h(
       'div',

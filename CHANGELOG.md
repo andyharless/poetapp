@@ -4,6 +4,8 @@ Changes to Rhapsode that users can see, newest first. The git history has the de
 
 ## 2026-10-01
 
+- Reworded the third practice option to **Practice lines missed when last tried**, and the matching note
+  on the poem page, so "their last try" can't be read as referring to the user.
 - Each line is now cued by up to **five** preceding lines instead of four, so a four-line refrain doesn't
   leave the cue ambiguous.
 
