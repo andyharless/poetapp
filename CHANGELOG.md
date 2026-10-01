@@ -6,6 +6,11 @@ Versions are numbered *major.minor.patch*: the middle number goes up for new fea
 and small changes. The version is shown at the bottom of the poem list. (Versions before 0.6.1 were numbered
 afterwards; those deploys showed a date and commit instead.)
 
+## 0.6.2 — 2026-10-01
+
+- The version at the bottom of the poem list includes the date of the release, as in
+  "Rhapsode version 0.6.2 · 20261001".
+
 ## 0.6.1 — 2026-10-01
 
 - The bottom of the poem list shows a version number, such as "Rhapsode version 0.6.1", instead of a date

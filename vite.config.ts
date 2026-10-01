@@ -1,10 +1,20 @@
 /// <reference types="node" />
 import { defineConfig } from 'vitest/config';
 import { VitePWA } from 'vite-plugin-pwa';
+import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 
-// The version in package.json, shown at the bottom of the poem list (see CHANGELOG.md).
-const appVersion: string = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version;
+// Shown at the bottom of the poem list (see CHANGELOG.md): the version in package.json and
+// the date of the commit being built, in the committer's time zone, e.g. "0.6.2 · 20261001".
+const version: string = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version;
+function commitDate(): string {
+  try {
+    return execSync('git log -1 --format=%cd --date=format:%Y%m%d').toString().trim();
+  } catch {
+    return new Date().toISOString().slice(0, 10).replaceAll('-', '');
+  }
+}
+const appVersion = `${version} · ${commitDate()}`;
 
 // base './' lets the built site work from any path (e.g. GitHub Pages /repo-name/).
 export default defineConfig({
