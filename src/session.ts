@@ -3,7 +3,7 @@ import type { Attempt, LineStats, Poem } from './model';
 export type Phase = 'first' | 'review' | 'done';
 
 // How many preceding lines are shown as the cue for the next one.
-export const CUE_LINES = 4;
+export const CUE_LINES = 5;
 
 export interface Session {
   lines: number[]; // line indices asked in the first pass, in order

@@ -71,11 +71,11 @@ describe('session', () => {
     expect(s.firstPassMisses).toEqual([1]);
   });
 
-  it('cues with up to four preceding lines', () => {
+  it('cues with up to five preceding lines', () => {
     expect(cueLines(0)).toEqual([]);
     expect(cueLines(1)).toEqual([0]);
-    expect(cueLines(4)).toEqual([0, 1, 2, 3]);
-    expect(cueLines(5)).toEqual([1, 2, 3, 4]);
+    expect(cueLines(5)).toEqual([0, 1, 2, 3, 4]);
+    expect(cueLines(6)).toEqual([1, 2, 3, 4, 5]);
   });
 });
 

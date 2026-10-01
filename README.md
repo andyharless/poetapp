@@ -14,7 +14,7 @@ and there is no account or server: your poems and practice history are stored on
   and blank lines mark stanza breaks. Any script works, including Ancient Greek, Cyrillic and right-to-left
   text such as Hebrew. You can edit a poem later. Practice history stays with lines that are unchanged or
   edited in place, such as a typo fix.
-- **Practice line by line.** The app shows up to four preceding lines (or the title, at the start of the poem)
+- **Practice line by line.** The app shows up to five preceding lines (or the title, at the start of the poem)
   as a cue. You recall the next line, tap **Reveal**, and mark it **Got it** or **Missed**.
 - **Review what you missed.** After the run-through, the lines you missed are asked again, repeating until
   you have got each one right.

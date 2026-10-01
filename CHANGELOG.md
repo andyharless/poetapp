@@ -2,6 +2,11 @@
 
 Changes to Rhapsode that users can see, newest first. The git history has the details.
 
+## 2026-10-01
+
+- Each line is now cued by up to **five** preceding lines instead of four, so a four-line refrain doesn't
+  leave the cue ambiguous.
+
 ## 2026-09-27
 
 - **Practice missed lines** now asks every line missed on the most recent whole-poem run-through. Drilling
