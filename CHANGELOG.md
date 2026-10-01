@@ -4,6 +4,10 @@ Changes to Rhapsode that users can see, newest first. The git history has the de
 
 ## 2026-10-01
 
+- On Android, **Export backup** now opens the share sheet (so it can go straight to a cloud storage app)
+  instead of only saving to Downloads. The backup is shared as a `.txt` file there, because Chrome on Android
+  won't share `.json` files. **Import backup** accepts both `.json` and `.txt` backups.
+- The README explains installing on Android and moving backups between phones.
 - Reworded the third practice option to **Practice lines missed when last tried**, and the matching note
   on the poem page, so "their last try" can't be read as referring to the user.
 - Each line is now cued by up to **five** preceding lines instead of four, so a four-line refrain doesn't

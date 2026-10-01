@@ -30,10 +30,24 @@ and there is no account or server: your poems and practice history are stored on
 
 ## Install on a phone
 
-1. On an iPhone, open the link above in **Safari**, then choose Share > **Add to Home Screen**. It launches
-   full-screen and works offline.
-2. Use **Export backup** now and then. The data lives only on the phone, and iOS can clear web-app storage,
-   for example if you delete the Home Screen icon.
+- **iPhone:** open the link above in **Safari**, then choose Share > **Add to Home Screen**.
+- **Android:** open the link in **Chrome**, then tap **Install** when offered, or use the ⋮ menu >
+  **Add to Home screen**.
+
+Either way it launches full-screen and works offline. Use **Export backup** now and then: the data lives only
+on the phone, and the phone can clear web-app storage, for example if you delete the Home Screen icon.
+
+### Moving data between phones
+
+Poems aren't synced between devices. To copy them, **Export backup** on one phone and **Import backup** on
+the other; importing merges into what is already there.
+
+- **Export** opens the share sheet, so you can send the backup straight to a cloud storage app. On Android
+  the file is named `.txt` instead of `.json`, because Chrome on Android won't share `.json` files. The
+  contents are the same, and either kind can be imported.
+- **Import on an iPhone:** the file picker opens at iCloud Drive. To use another storage app, tap **Browse**,
+  then pick it under **Locations**. If it isn't listed, tap ⋯ > **Edit** there and turn it on. The app must
+  support the Files app for this to work.
 
 ## Develop
 
@@ -62,7 +76,6 @@ Built with Vite, TypeScript (no framework), IndexedDB via `idb`, and `vite-plugi
 
 ## Later
 
-- Try the web app on Android.
 - A real iOS app through TestFlight. This needs the Apple Developer Program ($99/yr): wrap this build with
   Capacitor, build the signed `.ipa` on a cloud Mac (Expo EAS, Codemagic or GitHub Actions macOS runners), and
   upload it to App Store Connect. TestFlight builds expire after 90 days.

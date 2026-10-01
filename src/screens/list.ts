@@ -20,18 +20,23 @@ function sortPoems(poems: Poem[], by: Sort): Poem[] {
 
 async function downloadBackup() {
   const json = JSON.stringify(await exportAll(), null, 2);
-  const name = `rhapsode-backup-${new Date().toISOString().slice(0, 10)}.json`;
-  const file = new File([json], name, { type: 'application/json' });
-  if (navigator.canShare?.({ files: [file] })) {
+  const base = `rhapsode-backup-${new Date().toISOString().slice(0, 10)}`;
+  const file = new File([json], `${base}.json`, { type: 'application/json' });
+  // Chrome on Android won't share .json files but will share plain text, so offer the
+  // same content as .txt there; otherwise it falls back to a local download.
+  const shareable = [file, new File([json], `${base}.txt`, { type: 'text/plain' })].find((f) =>
+    navigator.canShare?.({ files: [f] }),
+  );
+  if (shareable) {
     try {
-      await navigator.share({ files: [file], title: name });
+      await navigator.share({ files: [shareable], title: shareable.name });
       return;
     } catch (e) {
       if ((e as Error).name === 'AbortError') return;
     }
   }
   const url = URL.createObjectURL(file);
-  const a = h('a', { href: url, download: name });
+  const a = h('a', { href: url, download: file.name });
   document.body.append(a);
   a.click();
   a.remove();
@@ -88,7 +93,7 @@ export async function listScreen(root: HTMLElement) {
 
   const fileInput = h('input', {
     type: 'file',
-    accept: 'application/json,.json',
+    accept: 'application/json,.json,text/plain,.txt',
     hidden: true,
     onchange: async () => {
       const f = fileInput.files?.[0];
