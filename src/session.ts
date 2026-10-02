@@ -86,6 +86,20 @@ export function lastPassDate(attempts: Attempt[]): string | undefined {
   return best;
 }
 
+// How many whole-poem attempts in a row, counting back from the latest, had no misses.
+export function passStreak(attempts: Attempt[]): number {
+  // sort is stable, so attempts on the same day keep the order they were made in
+  const whole = attempts.filter((a) => !a.lines).sort((a, b) => a.date.localeCompare(b.date));
+  let n = 0;
+  for (let i = whole.length - 1; i >= 0 && whole[i].firstPassMisses.length === 0; i--) n++;
+  return n;
+}
+
+// "3 passes in a row"
+export function streakText(n: number): string {
+  return `${n} pass${n === 1 ? '' : 'es'} in a row`;
+}
+
 export interface SessionResult {
   poem: Poem;
   lineStats: LineStats[]; // only the lines that were asked
@@ -128,6 +142,7 @@ export function applyResult(
           lastTested: date,
           lastFirstPassMisses: s.firstPassMisses.length,
           lastPassed: s.firstPassMisses.length === 0 ? date : poem.lastPassed,
+          passStreak: s.firstPassMisses.length === 0 ? (poem.passStreak ?? 0) + 1 : 0,
         }
       : poem,
     lineStats,

@@ -9,6 +9,7 @@ import {
   currentLine,
   lastPassDate,
   lastRunMisses,
+  passStreak,
   recentlyMissed,
 } from '../src/session';
 
@@ -111,8 +112,14 @@ describe('applyResult', () => {
     expect(r2.lineStats.map((x) => x.testCount)).toEqual([2, 2, 2, 2, 2, 2]);
     expect(r2.lineStats[0].lastMissed).toBeUndefined();
 
+    expect(r2.poem.passStreak).toBe(0);
     const r3 = applyResult(r2.poem, run(allLines(6), []), r2.lineStats, '2026-02-09');
     expect(r3.poem.lastPassed).toBe('2026-02-09');
+    expect(r3.poem.passStreak).toBe(1);
+    const r4 = applyResult(r3.poem, run(allLines(6), []), r3.lineStats, '2026-02-10');
+    expect(r4.poem.passStreak).toBe(2);
+    const r5 = applyResult(r4.poem, run(allLines(6), [3]), r4.lineStats, '2026-02-11');
+    expect(r5.poem.passStreak).toBe(0);
   });
 
   it('a partial session updates only its lines and not the poem record', () => {
@@ -132,6 +139,7 @@ describe('applyResult', () => {
     // a partial session with no misses is not a pass
     const r3 = applyResult(r2.poem, run([4], []), merged, '2026-03-03');
     expect(r3.poem.lastPassed).toBeUndefined();
+    expect(r3.poem.passStreak).toBe(0); // unchanged from the last whole run-through
   });
 });
 
@@ -177,5 +185,26 @@ describe('lastRunMisses', () => {
     ).toEqual([2, 4]);
     // same day: the later attempt wins
     expect(lastRunMisses(poem, [a('2026-01-05', [1]), a('2026-01-05', [3])])).toEqual([3]);
+  });
+});
+
+describe('passStreak', () => {
+  it('counts clean whole-poem attempts back from the latest, ignoring drills', () => {
+    const a = (date: string, misses: number[], lines?: number[]) => ({
+      poemId: 'p1',
+      date,
+      firstPassMisses: misses,
+      totalLines: 6,
+      lines,
+    });
+    expect(passStreak([])).toBe(0);
+    expect(passStreak([a('2026-01-01', [2])])).toBe(0);
+    // out of date order, as after importing an older backup
+    expect(
+      passStreak([a('2026-01-05', []), a('2026-01-01', []), a('2026-01-03', [1]), a('2026-01-07', [], [2]), a('2026-01-09', [])]),
+    ).toBe(2);
+    // same day: the later attempt counts as more recent
+    expect(passStreak([a('2026-01-05', []), a('2026-01-05', [1])])).toBe(0);
+    expect(passStreak([a('2026-01-05', [1]), a('2026-01-05', [])])).toBe(1);
   });
 });

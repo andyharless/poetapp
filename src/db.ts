@@ -1,7 +1,7 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import type { Attempt, Backup, LineStats, Poem } from './model';
 import { remapAttempt, remapLineStats } from './remap';
-import { lastPassDate } from './session';
+import { lastPassDate, passStreak } from './session';
 
 interface PoetDB extends DBSchema {
   poems: { key: string; value: Poem };
@@ -13,7 +13,7 @@ let dbPromise: Promise<IDBPDatabase<PoetDB>> | undefined;
 
 function db() {
   // The database keeps its original 'poetapp' name so existing data survives the rename.
-  dbPromise ??= openDB<PoetDB>('poetapp', 2, {
+  dbPromise ??= openDB<PoetDB>('poetapp', 3, {
     async upgrade(d, oldVersion, _newVersion, tx) {
       if (oldVersion < 1) {
         d.createObjectStore('poems', { keyPath: 'id' });
@@ -23,12 +23,15 @@ function db() {
         );
         d.createObjectStore('attempts', { autoIncrement: true }).createIndex('byPoem', 'poemId');
       }
-      if (oldVersion === 1) {
-        // v2 records the last passed date on each poem; derive it from past attempts.
+      if (oldVersion >= 1 && oldVersion < 3) {
+        // v2 records the last passed date on each poem and v3 the pass streak; derive them
+        // from past attempts.
         const attempts = await tx.objectStore('attempts').getAll();
         for (const p of await tx.objectStore('poems').getAll()) {
-          p.lastPassed = lastPassDate(attempts.filter((a) => a.poemId === p.id));
-          if (p.lastPassed) await tx.objectStore('poems').put(p);
+          const mine = attempts.filter((a) => a.poemId === p.id);
+          if (oldVersion < 2) p.lastPassed = lastPassDate(mine);
+          p.passStreak = passStreak(mine);
+          await tx.objectStore('poems').put(p);
         }
       }
     },
@@ -119,9 +122,13 @@ export async function importAll(b: Backup) {
   const tx = d.transaction(['poems', 'lineStats', 'attempts'], 'readwrite');
   const ids = new Set(b.poems.map((p) => p.id));
   for (const p of b.poems) {
-    // backups made before lastPassed existed
-    const lastPassed = p.lastPassed ?? lastPassDate(b.attempts.filter((a) => a.poemId === p.id));
-    tx.objectStore('poems').put({ ...p, lastPassed });
+    // backups made before lastPassed or passStreak existed
+    const mine = b.attempts.filter((a) => a.poemId === p.id);
+    tx.objectStore('poems').put({
+      ...p,
+      lastPassed: p.lastPassed ?? lastPassDate(mine),
+      passStreak: p.passStreak ?? passStreak(mine),
+    });
   }
   for (const s of b.lineStats) if (ids.has(s.poemId)) tx.objectStore('lineStats').put(s);
   const attempts = tx.objectStore('attempts');

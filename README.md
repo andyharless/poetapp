@@ -23,8 +23,9 @@ and there is no account or server: your poems and practice history are stored on
   drilled some of them). Each line keeps its usual cue. Drills update the lines' history but don't count as a
   run-through of the whole poem.
 - **Keep records.** For each poem the app records the last date it was tested, how many lines you missed on the
-  first run-through, and the last date you *passed* it (a whole run-through with no misses). For each line
-  it counts misses against tests, and it marks the lines missed when last tried.
+  first run-through, the last date you *passed* it (a whole run-through with no misses), and how many times in a
+  row you have passed it. For each line it counts misses against tests, and it marks the lines missed when
+  last tried.
 - **Choose what to practice.** Sort the list by title, least recently tested, or least recently passed.
 - **Back up.** **Export backup** saves everything to a JSON file, and **Import backup** merges one back in.
 

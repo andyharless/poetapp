@@ -1,6 +1,6 @@
 import { deletePoem, getAttempts, getLineStats, getPoem } from '../db';
 import { h, mount } from '../dom';
-import { lastRunMisses, recentlyMissed } from '../session';
+import { lastRunMisses, recentlyMissed, streakText } from '../session';
 
 export async function detailScreen(root: HTMLElement, id: string) {
   const poem = await getPoem(id);
@@ -50,7 +50,13 @@ export async function detailScreen(root: HTMLElement, id: string) {
         : `Never tested · ${poem.lines.length} lines`,
     ),
     poem.lastTested
-      ? h('div', { class: 'muted' }, poem.lastPassed ? `Last passed ${poem.lastPassed}` : 'Never passed')
+      ? h(
+          'div',
+          { class: 'muted' },
+          poem.lastPassed
+            ? `Last passed ${poem.lastPassed}${poem.passStreak ? ` · ${streakText(poem.passStreak)}` : ''}`
+            : 'Never passed',
+        )
       : null,
     h(
       'div',

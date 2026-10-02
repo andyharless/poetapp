@@ -8,6 +8,7 @@ export interface Poem {
   lastTested?: string; // yyyy-mm-dd
   lastFirstPassMisses?: number;
   lastPassed?: string; // yyyy-mm-dd: last whole-poem run-through with zero first-pass misses
+  passStreak?: number; // whole-poem run-throughs in a row, up to the latest, with zero first-pass misses
 }
 
 export interface LineStats {

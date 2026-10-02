@@ -6,6 +6,13 @@ Versions are numbered *major.minor.patch*: the middle number goes up for new fea
 and small changes. The version is shown at the bottom of the poem list. (Versions before 0.6.1 were numbered
 afterwards; those deploys showed a date and commit instead.)
 
+## 0.7.0 — 2026-10-02
+
+- Each poem keeps a **pass streak**: how many whole-poem run-throughs in a row, up to the latest, had no
+  misses. The poem list shows it as "passed, 3 in a row" when the last run-through was a pass, and the poem
+  page as "3 passes in a row" next to the last passed date. Missed-line drills don't affect it. Streaks for
+  existing poems are worked out from their practice history.
+
 ## 0.6.2 — 2026-10-01
 
 - The version at the bottom of the poem list includes the date of the release, as in

@@ -73,7 +73,9 @@ export async function listScreen(root: HTMLElement) {
             'div',
             { class: 'muted' },
             p.lastTested
-              ? `Last tested ${p.lastTested} · ${p.lastFirstPassMisses} of ${p.lines.length} lines missed`
+              ? `Last tested ${p.lastTested} · ${
+                  p.passStreak ? `passed, ${p.passStreak} in a row` : `${p.lastFirstPassMisses} of ${p.lines.length} lines missed`
+                }`
               : `Never tested · ${p.lines.length} lines`,
           ),
           sort === 'passed' &&
