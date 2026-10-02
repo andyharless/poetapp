@@ -6,6 +6,14 @@ Versions are numbered *major.minor.patch*: the middle number goes up for new fea
 and small changes. The version is shown at the bottom of the poem list. (Versions before 0.6.1 were numbered
 afterwards; those deploys showed a date and commit instead.)
 
+## 0.8.0 — 2026-10-02
+
+- **Folders** divide the poem list into parts. Choose a folder (or **All poems**) above the sort menu;
+  **New folder…** creates one, and **Rename** and **Delete** appear while a folder is selected. Deleting a
+  folder moves its poems to **Unfiled** and never deletes poems. Pick a poem's folder when adding or editing
+  it; a new poem goes into the folder you're viewing. In **All poems**, each poem shows its folder. Backups
+  include folders, and older backups still import.
+
 ## 0.7.0 — 2026-10-02
 
 - Each poem keeps a **pass streak**: how many whole-poem run-throughs in a row, up to the latest, had no

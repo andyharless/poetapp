@@ -1,6 +1,7 @@
-import { exportAll, importAll, listPoems } from '../db';
+import { deleteFolder, exportAll, importAll, listFolders, listPoems, saveFolder } from '../db';
 import { h, isTouchDevice, mount } from '../dom';
-import type { Backup, Poem } from '../model';
+import { byName, inFolder, validChoice, type FolderChoice } from '../folders';
+import { newId, type Backup, type Poem } from '../model';
 
 type Sort = 'title' | 'stale' | 'passed';
 
@@ -51,24 +52,40 @@ async function exportBackup(): Promise<string | undefined> {
 }
 
 export async function listScreen(root: HTMLElement) {
-  const poems = await listPoems();
+  const [poems, folders] = await Promise.all([listPoems(), listFolders()]);
+  const folderIds = new Set(folders.map((f) => f.id));
+  const folderNames = new Map(folders.map((f) => [f.id, f.name]));
   let sort: Sort = (localStorage.getItem('sort') as Sort) || 'title';
+  let choice: FolderChoice = validChoice(localStorage.getItem('folder'), folderIds);
   const listEl = h('div');
+  const folderBar = h('div');
   const status = h('div', { class: 'muted' });
+  const count = (c: FolderChoice) => poems.filter((p) => inFolder(p, c, folderIds)).length;
+  const reload = () => void listScreen(root);
 
   const render = () => {
     if (poems.length === 0) {
       mount(listEl, h('div', { class: 'empty' }, 'No poems yet. Tap “Add poem” to begin.'));
       return;
     }
+    const shown = poems.filter((p) => inFolder(p, choice, folderIds));
+    if (shown.length === 0) {
+      mount(listEl, h('div', { class: 'empty' }, choice === 'unfiled' ? 'No unfiled poems.' : 'No poems in this folder yet.'));
+      return;
+    }
     mount(
       listEl,
-      ...sortPoems(poems, sort).map((p) =>
+      ...sortPoems(shown, sort).map((p) =>
         h(
           'a',
           { class: 'card', href: `#/poem/${p.id}` },
           h('div', { class: 'title' }, p.title),
-          h('div', { class: 'muted' }, p.author),
+          h(
+            'div',
+            { class: 'muted' },
+            // in All poems, also say which folder each poem is in
+            [p.author, choice === 'all' && p.folderId && folderNames.get(p.folderId)].filter(Boolean).join(' · '),
+          ),
           h(
             'div',
             { class: 'muted' },
@@ -81,6 +98,87 @@ export async function listScreen(root: HTMLElement) {
           sort === 'passed' &&
             h('div', { class: 'muted' }, p.lastPassed ? `Last passed ${p.lastPassed}` : 'Never passed'),
         ),
+      ),
+    );
+  };
+
+  // A name box with Save and Cancel, for a new folder or a rename.
+  const nameEditor = (initial: string, onSave: (name: string) => Promise<void>) => {
+    const input = h('input', { type: 'text', placeholder: 'Folder name', autocomplete: 'off', 'aria-label': 'Folder name' });
+    input.value = initial;
+    const save = async () => {
+      const name = input.value.trim();
+      if (!name) return;
+      await onSave(name);
+      reload();
+    };
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') void save();
+      if (e.key === 'Escape') renderFolderBar();
+    });
+    mount(
+      folderBar,
+      h(
+        'div',
+        { class: 'row' },
+        input,
+        h('button', { class: 'primary', onclick: () => void save() }, 'Save'),
+        h('button', { onclick: () => renderFolderBar() }, 'Cancel'),
+      ),
+    );
+    input.focus();
+  };
+
+  const renderFolderBar = () => {
+    const NEW = '__new';
+    const select = h(
+      'select',
+      {
+        'aria-label': 'Folder',
+        onchange: () => {
+          if (select.value !== NEW) {
+            choice = select.value;
+            localStorage.setItem('folder', choice);
+            renderFolderBar();
+            render();
+            return;
+          }
+          nameEditor('', async (name) => {
+            const folder = { id: newId(), name };
+            await saveFolder(folder);
+            localStorage.setItem('folder', folder.id);
+          });
+        },
+      },
+      h('option', { value: 'all', selected: choice === 'all' }, `All poems (${poems.length})`),
+      ...byName(folders).map((f) => h('option', { value: f.id, selected: choice === f.id }, `${f.name} (${count(f.id)})`)),
+      folders.length > 0 && h('option', { value: 'unfiled', selected: choice === 'unfiled' }, `Unfiled (${count('unfiled')})`),
+      h('option', { value: NEW }, 'New folder…'),
+    );
+    const current = folders.find((f) => f.id === choice);
+    mount(
+      folderBar,
+      h(
+        'div',
+        { class: 'row' },
+        select,
+        current && h('button', { onclick: () => nameEditor(current.name, (name) => saveFolder({ ...current, name })) }, 'Rename'),
+        current &&
+          h(
+            'button',
+            {
+              class: 'danger',
+              onclick: async () => {
+                const n = count(current.id);
+                const moved = n ? ` Its ${n} poem${n === 1 ? '' : 's'} will move to Unfiled.` : '';
+                if (!confirm(`Delete the folder “${current.name}”?${moved}`)) return;
+                await deleteFolder(current.id);
+                localStorage.setItem('folder', 'all');
+                reload();
+              },
+            },
+            'Delete',
+          ),
       ),
     );
   };
@@ -118,9 +216,11 @@ export async function listScreen(root: HTMLElement) {
   });
 
   render();
+  renderFolderBar();
   mount(
     root,
     h('div', { class: 'row spread' }, h('h1', {}, 'Poems'), h('a', { class: 'btn primary', href: '#/add' }, 'Add poem')),
+    folderBar,
     sortSelect,
     listEl,
     h(

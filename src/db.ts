@@ -1,9 +1,10 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
-import type { Attempt, Backup, LineStats, Poem } from './model';
+import type { Attempt, Backup, Folder, LineStats, Poem } from './model';
 import { remapAttempt, remapLineStats } from './remap';
 import { lastPassDate, passStreak } from './session';
 
 interface PoetDB extends DBSchema {
+  folders: { key: string; value: Folder };
   poems: { key: string; value: Poem };
   lineStats: { key: [string, number]; value: LineStats; indexes: { byPoem: string } };
   attempts: { key: number; value: Attempt; indexes: { byPoem: string } };
@@ -13,7 +14,7 @@ let dbPromise: Promise<IDBPDatabase<PoetDB>> | undefined;
 
 function db() {
   // The database keeps its original 'poetapp' name so existing data survives the rename.
-  dbPromise ??= openDB<PoetDB>('poetapp', 3, {
+  dbPromise ??= openDB<PoetDB>('poetapp', 4, {
     async upgrade(d, oldVersion, _newVersion, tx) {
       if (oldVersion < 1) {
         d.createObjectStore('poems', { keyPath: 'id' });
@@ -34,6 +35,7 @@ function db() {
           await tx.objectStore('poems').put(p);
         }
       }
+      if (oldVersion < 4) d.createObjectStore('folders', { keyPath: 'id' });
     },
   });
   return dbPromise;
@@ -94,6 +96,25 @@ export async function saveResult(poem: Poem, lineStats: LineStats[], attempt: At
   ]);
 }
 
+export async function listFolders(): Promise<Folder[]> {
+  return (await db()).getAll('folders');
+}
+
+export async function saveFolder(folder: Folder) {
+  await (await db()).put('folders', folder);
+}
+
+// Deletes a folder. Its poems become unfiled; no poems are deleted.
+export async function deleteFolder(id: string) {
+  const d = await db();
+  const tx = d.transaction(['folders', 'poems'], 'readwrite');
+  for await (const c of tx.objectStore('poems').iterate()) {
+    if (c.value.folderId === id) await c.update({ ...c.value, folderId: undefined });
+  }
+  await tx.objectStore('folders').delete(id);
+  await tx.done;
+}
+
 export async function deletePoem(id: string) {
   const d = await db();
   const tx = d.transaction(['poems', 'lineStats', 'attempts'], 'readwrite');
@@ -109,6 +130,7 @@ export async function exportAll(): Promise<Backup> {
   const d = await db();
   return {
     version: 1,
+    folders: await d.getAll('folders'),
     poems: await d.getAll('poems'),
     lineStats: await d.getAll('lineStats'),
     attempts: await d.getAll('attempts'),
@@ -119,7 +141,8 @@ export async function exportAll(): Promise<Backup> {
 export async function importAll(b: Backup) {
   if (b?.version !== 1 || !Array.isArray(b.poems)) throw new Error('Not a Rhapsode backup file');
   const d = await db();
-  const tx = d.transaction(['poems', 'lineStats', 'attempts'], 'readwrite');
+  const tx = d.transaction(['folders', 'poems', 'lineStats', 'attempts'], 'readwrite');
+  for (const f of b.folders ?? []) tx.objectStore('folders').put(f);
   const ids = new Set(b.poems.map((p) => p.id));
   for (const p of b.poems) {
     // backups made before lastPassed or passStreak existed

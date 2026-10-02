@@ -1,4 +1,4 @@
-import { deletePoem, getAttempts, getLineStats, getPoem } from '../db';
+import { deletePoem, getAttempts, getLineStats, getPoem, listFolders } from '../db';
 import { h, mount } from '../dom';
 import { lastRunMisses, recentlyMissed, streakText } from '../session';
 
@@ -8,6 +8,7 @@ export async function detailScreen(root: HTMLElement, id: string) {
     location.hash = '#/';
     return;
   }
+  const folderName = (await listFolders()).find((f) => f.id === poem.folderId)?.name;
   const allStats = await getLineStats(id);
   const stats = new Map(allStats.map((s) => [s.lineIndex, s]));
   const recent = new Set(recentlyMissed(poem, allStats));
@@ -41,7 +42,7 @@ export async function detailScreen(root: HTMLElement, id: string) {
       h('a', { class: 'btn', href: `#/edit/${id}` }, 'Edit'),
     ),
     h('h1', {}, poem.title),
-    h('div', { class: 'muted' }, poem.author),
+    h('div', { class: 'muted' }, [poem.author, folderName && `in ${folderName}`].filter(Boolean).join(' · ')),
     h(
       'div',
       { class: 'muted' },

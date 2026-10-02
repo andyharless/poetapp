@@ -26,6 +26,8 @@ and there is no account or server: your poems and practice history are stored on
   first run-through, the last date you *passed* it (a whole run-through with no misses), and how many times in a
   row you have passed it. For each line it counts misses against tests, and it marks the lines missed when
   last tried.
+- **Organize long lists.** Put poems in folders, such as "Greek" or "Learning", and view one folder at a time
+  or all poems together. Each poem is in at most one folder; poems in none are listed as Unfiled.
 - **Choose what to practice.** Sort the list by title, least recently tested, or least recently passed.
 - **Back up.** **Export backup** saves everything to a JSON file, and **Import backup** merges one back in.
 

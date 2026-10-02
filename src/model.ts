@@ -8,6 +8,7 @@ export interface Poem {
   lastTested?: string; // yyyy-mm-dd
   lastFirstPassMisses?: number;
   lastPassed?: string; // yyyy-mm-dd: last whole-poem run-through with zero first-pass misses
+  folderId?: string; // undefined (or a deleted folder's id): unfiled
   passStreak?: number; // whole-poem run-throughs in a row, up to the latest, with zero first-pass misses
 }
 
@@ -28,8 +29,15 @@ export interface Attempt {
   lines?: number[]; // only for partial sessions (missed lines only): the lines asked
 }
 
+// Poems can be sorted into folders, at most one folder per poem.
+export interface Folder {
+  id: string;
+  name: string;
+}
+
 export interface Backup {
   version: 1;
+  folders?: Folder[]; // absent in backups made before folders existed
   poems: Poem[];
   lineStats: LineStats[];
   attempts: Attempt[];

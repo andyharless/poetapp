@@ -48,9 +48,10 @@ and otherwise the new version loads on the next full relaunch.
 
 ## Don't break existing data
 
-- The IndexedDB database is named `poetapp` (the app's old name) and is at version 3. Never rename it. To
+- The IndexedDB database is named `poetapp` (the app's old name) and is at version 4. Never rename it. To
   change the schema, bump the version and migrate in the `upgrade` callback in src/db.ts.
-- Backups are JSON with `version: 1`. Keep importing old backups working; add fields as optional.
+- Backups are JSON with `version: 1`. Keep importing old backups working; add fields as optional (as with
+  `folders`).
 - Per-line history is keyed by line index. When poem text is edited, src/remap.ts moves history to the
   right lines.
 
