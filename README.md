@@ -28,7 +28,7 @@ and there is no account or server: your poems and practice history are stored on
   last tried.
 - **Organize long lists.** Put poems in folders, such as "Greek" or "Learning", and view one folder at a time
   or all poems together. Each poem is in at most one folder; poems in none are listed as Unfiled.
-- **Choose what to practice.** Sort the list by title, least recently tested, or least recently passed.
+- **Choose what to practice.** Sort the list by title, author's surname, least recently tested, or least recently passed.
 - **Back up.** **Export backup** saves everything to a JSON file, and **Import backup** merges one back in.
 
 ## Install
@@ -83,6 +83,7 @@ Built with Vite, TypeScript (no framework), IndexedDB via `idb`, and `vite-plugi
 | Path | What it holds |
 | --- | --- |
 | `src/session.ts` | Practice logic: run-through, review queue, cues, results (no DOM) |
+| `src/authors.ts` | Guesses an author's surname for sorting |
 | `src/remap.ts` | Moves per-line history to the right lines after an edit |
 | `src/parse.ts` | Converts pasted text to lines and stanza breaks, and back |
 | `src/db.ts` | Storage and backup |

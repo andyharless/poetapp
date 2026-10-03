@@ -6,6 +6,12 @@ Versions are numbered *major.minor.patch*: the middle number goes up for new fea
 and small changes. The version is shown at the bottom of the poem list. (Versions before 0.6.1 were numbered
 afterwards; those deploys showed a date and commit instead.)
 
+## 0.9.0 — 2026-10-03
+
+- **Sort: author** lists poems by the author's surname, such as Eliot for "T. S. Eliot", then by title.
+  A name written "Eliot, T. S." sorts by the part before the comma; "Jr." and the like are skipped, and
+  lowercase particles stay with the surname ("de la Mare" sorts under D). Poems with no author come last.
+
 ## 0.8.0 — 2026-10-02
 
 - **Folders** divide the poem list into parts. Choose a folder (or **All poems**) above the sort menu;
