@@ -1,9 +1,10 @@
+import { compareByAuthor } from '../authors';
 import { deleteFolder, exportAll, importAll, listFolders, listPoems, saveFolder } from '../db';
 import { h, isTouchDevice, mount } from '../dom';
 import { byName, inFolder, validChoice, type FolderChoice } from '../folders';
 import { newId, type Backup, type Poem } from '../model';
 
-type Sort = 'title' | 'stale' | 'passed';
+type Sort = 'title' | 'author' | 'stale' | 'passed';
 
 function sortPoems(poems: Poem[], by: Sort): Poem[] {
   const copy = [...poems];
@@ -13,6 +14,8 @@ function sortPoems(poems: Poem[], by: Sort): Poem[] {
   } else if (by === 'passed') {
     // never passed first, then oldest pass date first
     copy.sort((a, b) => (a.lastPassed ?? '').localeCompare(b.lastPassed ?? '') || a.title.localeCompare(b.title));
+  } else if (by === 'author') {
+    copy.sort(compareByAuthor);
   } else {
     copy.sort((a, b) => a.title.localeCompare(b.title));
   }
@@ -194,6 +197,7 @@ export async function listScreen(root: HTMLElement) {
       },
     },
     h('option', { value: 'title', selected: sort === 'title' }, 'Sort: title'),
+    h('option', { value: 'author', selected: sort === 'author' }, 'Sort: author'),
     h('option', { value: 'stale', selected: sort === 'stale' }, 'Sort: least recently tested'),
     h('option', { value: 'passed', selected: sort === 'passed' }, 'Sort: least recently passed'),
   );
