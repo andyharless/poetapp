@@ -6,9 +6,25 @@ const SUFFIXES = new Set(['jr', 'sr', 'ii', 'iii', 'iv']);
 // Lowercase words that belong with the surname, as in "Walter de la Mare" or "Ludwig van Beethoven".
 const PARTICLES = new Set(['de', 'del', 'della', 'der', 'di', 'da', 'du', 'des', 'la', 'le', 'van', 'von', 'ten', 'ter']);
 
+// Authors known by their first name, keyed by full name (as normalized by key()). Add to it as needed.
+const KNOWN_BY_FIRST_NAME = new Map([
+  ['dante alighieri', 'Dante'],
+  ['dante aligheri', 'Dante'],
+  ['michelangelo buonarroti', 'Michelangelo'],
+  ['leonardo da vinci', 'Leonardo'],
+]);
+
+// Lowercase, without accents or extra spaces, so "Dante  Alighièri" matches "dante alighieri".
+function key(name: string): string {
+  return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/\s+/g, ' ');
+}
+
 // The author's surname, guessed from the author field: the part before a comma ("Eliot, T. S."),
 // otherwise the last word, along with any lowercase particles before it. Empty if there is no author.
+// Authors known by their first name sort by that name instead.
 export function surname(author: string): string {
+  const known = KNOWN_BY_FIRST_NAME.get(key(author));
+  if (known) return known;
   let name = author.trim().replace(/\s+/g, ' ');
   // drop trailing suffixes, with or without a comma before them
   for (;;) {

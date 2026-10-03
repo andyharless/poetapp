@@ -6,6 +6,11 @@ Versions are numbered *major.minor.patch*: the middle number goes up for new fea
 and small changes. The version is shown at the bottom of the poem list. (Versions before 0.6.1 were numbered
 afterwards; those deploys showed a date and commit instead.)
 
+## 0.9.1 — 2026-10-03
+
+- **Sort: author** puts poets known by their first name under that name: Dante Alighieri under D,
+  Michelangelo Buonarroti under M, and Leonardo da Vinci under L.
+
 ## 0.9.0 — 2026-10-03
 
 - **Sort: author** lists poems by the author's surname, such as Eliot for "T. S. Eliot", then by title.
