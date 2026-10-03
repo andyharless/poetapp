@@ -38,6 +38,14 @@ describe('surname', () => {
     expect(surname('Ludwig van Beethoven')).toBe('van Beethoven');
     expect(surname('Daphne Du Maurier')).toBe('Maurier');
   });
+
+  it('uses the first name for authors known by it', () => {
+    expect(surname('Dante Alighieri')).toBe('Dante');
+    expect(surname('dante  aligheri')).toBe('Dante');
+    expect(surname('Michelangelo Buonarroti')).toBe('Michelangelo');
+    expect(surname('Leonardo da Vinci')).toBe('Leonardo');
+    expect(surname('Dante Gabriel Rossetti')).toBe('Rossetti');
+  });
 });
 
 describe('compareByAuthor', () => {
