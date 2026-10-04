@@ -6,6 +6,13 @@ Versions are numbered *major.minor.patch*: the middle number goes up for new fea
 and small changes. The version is shown at the bottom of the poem list. (Versions before 0.6.1 were numbered
 afterwards; those deploys showed a date and commit instead.)
 
+## 0.10.0 — 2026-10-04
+
+- **Sort: random** lists poems in a random order, to vary which ones you practice. The order stays the same
+  when you come back to the list; tap **Shuffle** (next to the sort menu) or pick **Sort: random** again for a
+  new one.
+- **Export backup** and **Import backup** are now at the top of the poem list instead of the bottom.
+
 ## 0.9.1 — 2026-10-03
 
 - **Sort: author** puts poets known by their first name under that name: Dante Alighieri under D,

@@ -3,10 +3,12 @@ import { deleteFolder, exportAll, importAll, listFolders, listPoems, saveFolder 
 import { h, isTouchDevice, mount } from '../dom';
 import { byName, inFolder, validChoice, type FolderChoice } from '../folders';
 import { newId, type Backup, type Poem } from '../model';
+import { newSeed, shuffled } from '../shuffle';
 
-type Sort = 'title' | 'author' | 'stale' | 'passed';
+type Sort = 'title' | 'author' | 'stale' | 'passed' | 'random';
 
-function sortPoems(poems: Poem[], by: Sort): Poem[] {
+function sortPoems(poems: Poem[], by: Sort, seed: string): Poem[] {
+  if (by === 'random') return shuffled(poems, seed);
   const copy = [...poems];
   if (by === 'stale') {
     // never tested first, then oldest test date first
@@ -59,6 +61,7 @@ export async function listScreen(root: HTMLElement) {
   const folderIds = new Set(folders.map((f) => f.id));
   const folderNames = new Map(folders.map((f) => [f.id, f.name]));
   let sort: Sort = (localStorage.getItem('sort') as Sort) || 'title';
+  let seed = localStorage.getItem('shuffleSeed') || newSeed();
   let choice: FolderChoice = validChoice(localStorage.getItem('folder'), folderIds);
   const listEl = h('div');
   const folderBar = h('div');
@@ -78,7 +81,7 @@ export async function listScreen(root: HTMLElement) {
     }
     mount(
       listEl,
-      ...sortPoems(shown, sort).map((p) =>
+      ...sortPoems(shown, sort, seed).map((p) =>
         h(
           'a',
           { class: 'card', href: `#/poem/${p.id}` },
@@ -186,6 +189,22 @@ export async function listScreen(root: HTMLElement) {
     );
   };
 
+  // A new random order each time you pick Random or tap Shuffle; otherwise it stays put.
+  const reshuffle = () => {
+    seed = newSeed();
+    localStorage.setItem('shuffleSeed', seed);
+  };
+  const shuffleButton = h(
+    'button',
+    {
+      onclick: () => {
+        reshuffle();
+        render();
+      },
+    },
+    'Shuffle',
+  );
+  const showShuffle = () => (shuffleButton.style.display = sort === 'random' ? '' : 'none');
   const sortSelect = h(
     'select',
     {
@@ -193,6 +212,8 @@ export async function listScreen(root: HTMLElement) {
       onchange: () => {
         sort = sortSelect.value as Sort;
         localStorage.setItem('sort', sort);
+        if (sort === 'random') reshuffle();
+        showShuffle();
         render();
       },
     },
@@ -200,7 +221,9 @@ export async function listScreen(root: HTMLElement) {
     h('option', { value: 'author', selected: sort === 'author' }, 'Sort: author'),
     h('option', { value: 'stale', selected: sort === 'stale' }, 'Sort: least recently tested'),
     h('option', { value: 'passed', selected: sort === 'passed' }, 'Sort: least recently passed'),
+    h('option', { value: 'random', selected: sort === 'random' }, 'Sort: random'),
   );
+  showShuffle();
 
   const fileInput = h('input', {
     type: 'file',
@@ -224,12 +247,9 @@ export async function listScreen(root: HTMLElement) {
   mount(
     root,
     h('div', { class: 'row spread' }, h('h1', {}, 'Poems'), h('a', { class: 'btn primary', href: '#/add' }, 'Add poem')),
-    folderBar,
-    sortSelect,
-    listEl,
     h(
       'div',
-      { class: 'row', style: 'margin-top:24px' },
+      { class: 'row' },
       h(
         'button',
         {
@@ -244,6 +264,9 @@ export async function listScreen(root: HTMLElement) {
       fileInput,
     ),
     status,
+    folderBar,
+    h('div', { class: 'row' }, sortSelect, shuffleButton),
+    listEl,
     h('div', { class: 'muted version' }, `Rhapsode version ${__APP_VERSION__}`),
   );
 }
