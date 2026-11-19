@@ -66,6 +66,17 @@ the other; importing merges into what is already there.
   then pick it under **Locations**. If it isn't listed, tap ⋯ > **Edit** there and turn it on. The app must
   support the Files app for this to work.
 
+### Editing a backup outside the app
+
+You can add poems, create folders and sort poems into them by editing an exported backup, by hand or with any
+AI assistant, then importing it. [docs/backup-format.md](docs/backup-format.md) describes the format and what
+import can and can't change. Before importing, check the edited file against the original export (this needs
+Node.js and a copy of this repo):
+
+```sh
+npm run check-backup -- edited.json original.json
+```
+
 ## Develop
 
 Requires Node.js (the deploy workflow uses Node 24).
@@ -73,7 +84,7 @@ Requires Node.js (the deploy workflow uses Node 24).
 ```sh
 npm install
 npm run dev        # http://localhost:5173 (also reachable from a phone on the same Wi-Fi)
-npm test           # unit tests for the parser, edit remapping and practice-session logic
+npm test           # unit tests for the parser, edit remapping, practice-session logic and backup checker
 npm run build      # production build into dist/
 ```
 
@@ -92,6 +103,8 @@ Built with Vite, TypeScript (no framework), IndexedDB via `idb`, and `vite-plugi
 | `src/db.ts` | Storage and backup |
 | `src/screens/*` | The screens: list, add/edit, poem detail, practice |
 | `src/main.ts` | Hash router |
+| `tools/backup-check.ts` | Checks an edited backup and compares it with the original (no DOM) |
+| `tools/check-backup.ts` | Command-line wrapper: `npm run check-backup` |
 
 ## Later
 

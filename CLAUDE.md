@@ -13,6 +13,7 @@ npm test           # vitest unit tests (tests/)
 npm run build      # type-check (tsc --noEmit) + production build into dist/
 npm run dev        # dev server on http://localhost:5173
 npm run preview    # serve dist/ on http://localhost:4173
+npm run check-backup -- EDITED.json [ORIGINAL.json]   # check a backup edited outside the app
 ```
 
 Run `npm test` and `npm run build` before every commit. For UI changes, also check the built app in a
@@ -51,7 +52,8 @@ and otherwise the new version loads on the next full relaunch.
 - The IndexedDB database is named `poetapp` (the app's old name) and is at version 4. Never rename it. To
   change the schema, bump the version and migrate in the `upgrade` callback in src/db.ts.
 - Backups are JSON with `version: 1`. Keep importing old backups working; add fields as optional (as with
-  `folders`).
+  `folders`). docs/backup-format.md documents the format for people and AIs editing backups; keep it and
+  tools/backup-check.ts in step with src/model.ts and importAll in src/db.ts.
 - Per-line history is keyed by line index. When poem text is edited, src/remap.ts moves history to the
   right lines.
 

@@ -7,7 +7,8 @@
     "dev": "vite --host",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host",
-    "test": "vitest run"
+    "test": "vitest run",
+    "check-backup": "node tools/check-backup.ts"
   },
   "dependencies": {
     "idb": "^8.0.3"
