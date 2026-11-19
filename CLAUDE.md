@@ -67,6 +67,10 @@ and otherwise the new version loads on the next full relaunch.
 
 ## Ideas not yet built
 
+AI-assisted poem management (vendor-neutral tools for adding poems, choosing between published versions, and
+later splitting long poems into sections) is designed in docs/ai-poem-management.md, with decisions and the
+phase status. Read it before working on any of that, and update its status table as phases land.
+
 From the owner's original notes: memorization phases per poem, splitting long poems into sections of about
 50 lines, comparing published versions of a poem, typed recall with a diff against the text, syncing between
 devices, and possibly a native iOS app later (Capacitor + TestFlight).
