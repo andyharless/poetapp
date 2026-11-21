@@ -14,6 +14,7 @@ npm run build      # type-check (tsc --noEmit) + production build into dist/
 npm run dev        # dev server on http://localhost:5173
 npm run preview    # serve dist/ on http://localhost:4173
 npm run check-backup -- EDITED.json [ORIGINAL.json]   # check a backup edited outside the app
+npm run check-versions -- FILE.versions.json           # check a versions file (docs/versions-format.md)
 ```
 
 Run `npm test` and `npm run build` before every commit. For UI changes, also check the built app in a
@@ -54,6 +55,8 @@ and otherwise the new version loads on the next full relaunch.
 - Backups are JSON with `version: 1`. Keep importing old backups working; add fields as optional (as with
   `folders`). docs/backup-format.md documents the format for people and AIs editing backups; keep it and
   tools/backup-check.ts in step with src/model.ts and importAll in src/db.ts.
+- Versions files (`format: "rhapsode-versions"`, `version: 1`) are written by AIs outside the app. Keep
+  docs/versions-format.md, src/versions.ts, tools/versions-check.ts and skills/poem-versions/SKILL.md in step.
 - Per-line history is keyed by line index. When poem text is edited, src/remap.ts moves history to the
   right lines.
 

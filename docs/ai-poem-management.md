@@ -1,6 +1,6 @@
 # AI-assisted poem management: design
 
-Status as of 2026-11-19: phase 1 is built; phase 2 is next. Discussion copy (may be out of date):
+Status as of 2026-11-21: phases 1 and 2 are built; phase 3 is next. Discussion copy (may be out of date):
 <https://claude.ai/artifact/QzU8moJG4RD32XL4W1SFS5>. This file is the reference.
 
 ## Goals
@@ -27,8 +27,8 @@ remap per-line history when text changes; re-importing a stale export overwrites
 | # | Phase | Status |
 | --- | --- | --- |
 | 1 | Backup format spec and checker: `docs/backup-format.md`, `tools/backup-check.ts`, `npm run check-backup` | Done (2026-11-19) |
-| 2 | Versions format, its spec, and a skill for gathering versions | Next |
-| 3 | Comparison and choice in the app (imports a versions file, adds the chosen poem, saves provenance) | |
+| 2 | Versions format, its spec, and a skill for gathering versions: `docs/versions-format.md`, `tools/versions-check.ts`, `npm run check-versions`, `skills/poem-versions/SKILL.md` | Done (2026-11-21) |
+| 3 | Comparison and choice in the app (imports a versions file, adds the chosen poem, saves provenance) | Next |
 | 4 | Local MCP server over a backup file, if hand-editing backups proves fragile | Optional |
 | 5 | Sections for long poems | Later |
 
@@ -46,7 +46,8 @@ Editing a backup directly (phase 1) remains the route for bulk changes such as r
 
 ### Versions file
 
-JSON. Draft:
+JSON, specified in [versions-format.md](versions-format.md) (the reference; the sketch below is the original
+draft). `src/versions.ts` has its types and the line alignment the checker uses and the app will reuse:
 
 ```json
 {
