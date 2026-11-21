@@ -77,6 +77,15 @@ Node.js and a copy of this repo):
 npm run check-backup -- edited.json original.json
 ```
 
+### Gathering versions of a poem with an AI
+
+Printed texts of a poem often differ, and for memorization one wrong word matters. An AI assistant with web
+access can collect several versions with their sources and say which to choose, following
+[skills/poem-versions/SKILL.md](skills/poem-versions/SKILL.md). It writes a versions file
+([docs/versions-format.md](docs/versions-format.md)), which you can check with
+`npm run check-versions -- kubla-khan.versions.json`. Rhapsode can't open these files yet; for now, paste the
+chosen text into **Add poem**.
+
 ## Develop
 
 Requires Node.js (the deploy workflow uses Node 24).
@@ -84,7 +93,7 @@ Requires Node.js (the deploy workflow uses Node 24).
 ```sh
 npm install
 npm run dev        # http://localhost:5173 (also reachable from a phone on the same Wi-Fi)
-npm test           # unit tests for the parser, edit remapping, practice-session logic and backup checker
+npm test           # unit tests for the parser, edit remapping, practice-session logic and backup and versions checkers
 npm run build      # production build into dist/
 ```
 
@@ -105,6 +114,10 @@ Built with Vite, TypeScript (no framework), IndexedDB via `idb`, and `vite-plugi
 | `src/main.ts` | Hash router |
 | `tools/backup-check.ts` | Checks an edited backup and compares it with the original (no DOM) |
 | `tools/check-backup.ts` | Command-line wrapper: `npm run check-backup` |
+| `src/versions.ts` | Versions file types and line-by-line alignment of two versions |
+| `tools/versions-check.ts` | Checks a versions file and summarizes it (no DOM) |
+| `tools/check-versions.ts` | Command-line wrapper: `npm run check-versions` |
+| `skills/poem-versions/` | Instructions for an AI gathering versions of a poem |
 
 ## Later
 
